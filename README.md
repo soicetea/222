@@ -1,6 +1,7 @@
 # Codex macOS installer
 
 This directory contains a `curl ... | bash`-ready installer for `Codex CLI` on macOS.
+If Homebrew is missing and the current user is a macOS Administrator, the script will prompt for the administrator password and continue automatically.
 
 ## Files
 
@@ -43,6 +44,8 @@ curl -fsSL https://raw.githubusercontent.com/<your-org>/<your-repo>/main/codex-i
 ## What it handles
 
 - macOS check
+- Administrator precheck before attempting a fresh Homebrew install
+- Automatic `sudo` authentication prompt for first-time Homebrew install
 - Xcode Command Line Tools precheck
 - Homebrew install and shell init
 - Node.js install
@@ -53,6 +56,8 @@ curl -fsSL https://raw.githubusercontent.com/<your-org>/<your-repo>/main/codex-i
 
 ## What still may require user action
 
+- A first-time Homebrew install requires a macOS Administrator account.
+- The script can prompt for an administrator password, but it cannot turn a non-admin macOS user into an admin.
 - The first install of Xcode Command Line Tools may open an Apple prompt.
 - The first Homebrew install may ask for the macOS account password.
 - If `OPENAI_API_KEY` is not provided, the user still needs to run `codex login`.

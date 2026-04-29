@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SCRIPT_VERSION="2026-04-29"
+SCRIPT_VERSION="2026-04-29.2"
 BREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh"
 NPM_GLOBAL_PREFIX_DEFAULT="${HOME}/.npm-global"
 
@@ -60,6 +60,20 @@ ensure_macos() {
   if [[ "$(uname -s)" != "Darwin" ]]; then
     fail "This installer only supports macOS."
   fi
+}
+
+ensure_admin_for_homebrew_install() {
+  if command -v brew >/dev/null 2>&1 || [[ -x /opt/homebrew/bin/brew ]] || [[ -x /usr/local/bin/brew ]]; then
+    return 0
+  fi
+
+  if dseditgroup -o checkmember -m "${USER}" admin >/dev/null 2>&1; then
+    log "Requesting administrator privileges for first-time Homebrew installation..."
+    sudo -v || fail "Administrator authentication failed. Re-run the installer and enter the macOS administrator password when prompted."
+    return 0
+  fi
+
+  fail "Homebrew is not installed and the current macOS user '${USER}' is not an Administrator. This installer can prompt for an administrator password, but it cannot elevate a non-admin account. Ask an administrator to run this installer, or have an administrator install Homebrew first."
 }
 
 ensure_clt() {
@@ -195,6 +209,7 @@ print_summary() {
 
 main() {
   ensure_macos
+  ensure_admin_for_homebrew_install
   ensure_clt
   ensure_homebrew
   ensure_node
